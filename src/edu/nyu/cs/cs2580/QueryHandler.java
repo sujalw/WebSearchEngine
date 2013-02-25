@@ -37,7 +37,7 @@ class QueryHandler implements HttpHandler {
     if (!requestMethod.equalsIgnoreCase("GET")){  // GET requests only.
       return;
     }
-
+    
     // Print the user request header.
     Headers requestHeaders = exchange.getRequestHeaders();
     System.out.print("Incoming request: ");
@@ -59,13 +59,22 @@ class QueryHandler implements HttpHandler {
             // @CS2580: Invoke different ranking functions inside your
             // implementation of the Ranker class.
             if (ranker_type.equals("cosine")){
-              queryResponse = (ranker_type + " not implemented.");
+              //queryResponse = (ranker_type + " not implemented.");
+            	CosineRanker cosineRanker = new CosineRanker(_ranker);            	
+            	Vector < ScoredDocument > sds = cosineRanker.runquery(query_map.get("query"));
+            	queryResponse = Utilities.generateOutput(sds, query_map);
             } else if (ranker_type.equals("QL")){
               queryResponse = (ranker_type + " not implemented.");
             } else if (ranker_type.equals("phrase")){
-              queryResponse = (ranker_type + " not implemented.");
+              //queryResponse = (ranker_type + " not implemented.");
+            	PhraseRanker phraseRanker = new PhraseRanker(_ranker);
+            	Vector < ScoredDocument > sds = phraseRanker.runquery(query_map.get("query"), 2); // bigram terms
+            	queryResponse = Utilities.generateOutput(sds, query_map);
             } else if (ranker_type.equals("linear")){
-              queryResponse = (ranker_type + " not implemented.");
+              //queryResponse = (ranker_type + " not implemented.");
+            	LinearRanker linRanker = new LinearRanker(_ranker);
+            	Vector < ScoredDocument > sds = linRanker.runquery(query_map.get("query"), 1, 2, 3, 4);
+            	queryResponse = Utilities.generateOutput(sds, query_map);
             } else {
               queryResponse = (ranker_type+" not implemented.");
             }
@@ -88,7 +97,7 @@ class QueryHandler implements HttpHandler {
         }
       }
     }
-    
+            
       // Construct a simple response.
       Headers responseHeaders = exchange.getResponseHeaders();
       responseHeaders.set("Content-Type", "text/plain");
