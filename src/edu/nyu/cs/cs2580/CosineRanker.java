@@ -19,7 +19,7 @@ public class CosineRanker {
 
 	public Vector<ScoredDocument> runquery(String query) {
 		Vector<ScoredDocument> retrieval_results = new Vector<ScoredDocument>();
-		int noOfDocs = _ranker.numDocs();
+		double noOfDocs = _ranker.numDocs();
 		for (int i = 0; i < noOfDocs; ++i) {
 			retrieval_results.add(runquery(query, i));
 		}
@@ -35,14 +35,16 @@ public class CosineRanker {
 	}
 
 	public double getCosineScore(String query, int did) {
+		
 		// Build query vector
+		
 		Scanner s = new Scanner(query);
 		Vector<String> qv = new Vector<String>();
-		while (s.hasNext()) {
+		while (s.hasNext()) {			
 			String term = s.next();
 			qv.add(term);
 		}
-
+		
 		// Get the document vector.
 		Document d = _ranker.getDoc(did);
 
@@ -51,21 +53,27 @@ public class CosineRanker {
 		
 		// get unigram terms
 		Vector<String> dv = Utilities.getNGram(d.get_body_vector(), 1);
-
-		// get term frequencies in the document
-		HashMap<String, Integer> termFreqQuery = Utilities.getTermFreq(qv);
-		HashMap<String, Integer> termFreqDoc = Utilities.getTermFreq(dv);
-
-		HashMap<String, Double> termFreqQuery_UnitVec = Utilities
-				.getUnitVector(termFreqQuery);
-		HashMap<String, Double> termFreqDoc_UnitVec = Utilities
-				.getUnitVector(termFreqDoc);
-
-		double score = Utilities.getDotProduct(termFreqQuery_UnitVec,
-				termFreqDoc_UnitVec);
+		dv.addAll(d.get_title_vector());
+		
+		// get term frequencies in the document		
+		HashMap<String, Double> termFreqDoc = Utilities.getTermFreq(dv);
+		HashMap<String, Double> tfDoc = Utilities.getNormalizedVector(termFreqDoc, 1d);
+		NormalizedTFIDF normTfIdf = new NormalizedTFIDF(_ranker);
+		HashMap<String, Double> idfDoc = normTfIdf.invDocFreqVector(tfDoc);
+		HashMap<String, Double> tfIdfDoc = Utilities.getTfIdf(tfDoc, idfDoc);
+		HashMap<String, Double> tfIdfDocNormalised = Utilities.getNormalizedVector(tfIdfDoc, 2);
+		
+		//System.out.println("proc doc");
+		
+		HashMap<String, Double> termFreqQuery = Utilities.getTermFreq(qv);
+		HashMap<String, Double> tfQuery = Utilities.getNormalizedVector(termFreqQuery, 1d);
+		HashMap<String, Double> idfQuery = normTfIdf.invDocFreqVector(tfQuery);
+		HashMap<String, Double> tfIdfQuery = Utilities.getTfIdf(tfQuery, idfQuery);
+		HashMap<String, Double> tfIdfQueryNormalised = Utilities.getNormalizedVector(tfIdfQuery, 2);
+		
+		double score = Utilities.getDotProduct(tfIdfDocNormalised, tfIdfQueryNormalised);
 
 		return score;
-
 	}
 
 	public static void main(String[] args) {

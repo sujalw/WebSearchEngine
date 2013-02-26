@@ -27,13 +27,21 @@ public class Output {
 		_clickLoggingData = "";
 	}
 
+	/**
+	 * @author sujal
+	 * @param sessionId
+	 * @return
+	 */
 	public String generateTextOutput(String sessionId) {
 		String queryResponse = "";
 
 		Properties prop = new Properties();
-		// load a properties file
+		
 		try {
+			// load a properties file
 			prop.load(this.getClass().getResourceAsStream("config.properties"));
+			String resultsDir = prop.getProperty("results_dir");
+			String click_logging_results = prop.getProperty("click_logging_results");
 			
 			Iterator<ScoredDocument> itr = _outputVector.iterator();
 			while (itr.hasNext()) {
@@ -49,12 +57,44 @@ public class Output {
 						+ action.RENDER + "\t" + new Date() + "\n";
 			}
 			
-			// write _clickLogging data to the file
-			String logPath = prop.getProperty("click_logging_path");
-			FileWriter fstream = new FileWriter(logPath, true);
-			BufferedWriter out = new BufferedWriter(fstream);
-			out.write(_clickLoggingData);			
-			out.close();
+			// write _clickLogging data to the file						
+			Utilities.writeToFile(resultsDir + click_logging_results, _clickLoggingData, true);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return queryResponse;
+		// return _clickLogging;
+	}
+	
+	public String generateHtmlOutput(String sessionId) {
+		String queryResponse = "";
+
+		Properties prop = new Properties();
+		
+		try {
+			// load a properties file
+			prop.load(this.getClass().getResourceAsStream("config.properties"));
+			String resultsDir = prop.getProperty("results_dir");
+			String click_logging_results = prop.getProperty("click_logging_results");
+			
+			Iterator<ScoredDocument> itr = _outputVector.iterator();
+			while (itr.hasNext()) {
+				ScoredDocument sd = itr.next();
+				if (queryResponse.length() > 0) {
+					queryResponse = queryResponse + "\n";
+				}
+				queryResponse = queryResponse + _query_map.get("query") + "\t"
+						+ sd.asString();
+
+				_clickLoggingData = _clickLoggingData + sessionId + "\t"
+						+ _query_map.get("query") + "\t" + sd._did + "\t"
+						+ action.RENDER + "\t" + new Date() + "\n";
+			}
+			
+			// write _clickLogging data to the file						
+			//Utilities.writeToFile(resultsDir + click_logging_results, _clickLoggingData, true);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

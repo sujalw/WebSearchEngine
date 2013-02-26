@@ -20,6 +20,7 @@ class Document {
   private Vector < Integer > _body;
   private Vector < Integer > _title;
   private String _titleString;
+  private String _bodyString;
   private int _numviews;
   
   public static int documentFrequency(String s){
@@ -38,11 +39,12 @@ class Document {
     Scanner s = new Scanner(content).useDelimiter("\t");
 
     _titleString = s.next();
+    _bodyString = s.next();
     _title = new Vector < Integer >();
     _body = new Vector < Integer >();
 
     readTermVector(_titleString, _title);
-    readTermVector(s.next(), _body);
+    readTermVector(_bodyString, _body);
     
     HashSet < Integer > unique_terms = new HashSet < Integer >();
     for (int i = 0; i < _title.size(); ++i){
@@ -71,6 +73,10 @@ class Document {
   
   public String get_title_string(){
     return _titleString;
+  }
+  
+  public String get_body_string(){
+	    return _bodyString;
   }
 
   public int get_numviews(){

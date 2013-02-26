@@ -30,6 +30,13 @@ class Index {
     }
     System.out.println("Done indexing " + Integer.toString(_documents.size()) + " documents...");
   }
+  
+  public int getNumViews(int did) {
+	  Document d = (did >= _documents.size() || did < 0) ? null : _documents.get(did);
+	  if(d == null)
+		  return 0;
+	  return d.get_numviews();
+  }
 
   public int documentFrequency(String s){
     return Document.documentFrequency(s);
@@ -42,6 +49,20 @@ class Index {
   }
   public int numDocs(){
     return _documents.size();
+  }
+  
+  public String getTitleString(int did) {
+	  Document d = (did >= _documents.size() || did < 0) ? null : _documents.get(did);
+	  if(d == null)
+		  return "";
+	  return d.get_title_string();
+  }
+  
+  public String getBodyString(int did) {
+	  Document d = (did >= _documents.size() || did < 0) ? null : _documents.get(did);
+	  if(d == null)
+		  return "";
+	  return d.get_body_string();
   }
 
   public Document getDoc(int did){

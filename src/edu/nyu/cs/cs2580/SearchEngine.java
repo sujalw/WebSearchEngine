@@ -22,7 +22,7 @@ public class SearchEngine {
     String index_path = args[1];
     InetSocketAddress addr = new InetSocketAddress(port);
     HttpServer server = HttpServer.create(addr, -1);
-
+    
     Ranker ranker = new Ranker(index_path);
     
     // Attach specific paths to their handlers.

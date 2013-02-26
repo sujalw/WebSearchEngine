@@ -20,18 +20,18 @@ public class LinearRanker{
 	/**
 	 * 
 	 * @param query
-	 * @param B1 Weight of cosine score
-	 * @param B2 Weight of Language model probabilities (Jenilek) score 
-	 * @param B3 Weight of phrase model score
-	 * @param B4 Weight of numviews score
+	 * @param wCosine Weight of cosine score
+	 * @param wLMP Weight of Language model probabilities (Jenilek) score 
+	 * @param wPhrase Weight of phrase model score
+	 * @param wNumViews Weight of numviews score
 	 * @return
 	 */
-	public Vector<ScoredDocument> runquery(String query, int B1, int B2, int B3, int B4) {
+	public Vector<ScoredDocument> runquery(String query, float wCosine, float wLMP, float wPhrase, float wNumViews) {
 		
 		Vector<ScoredDocument> retrieval_results = new Vector<ScoredDocument>();
-		int noOfDocs = _ranker.numDocs();
+		double noOfDocs = _ranker.numDocs();
 		for (int i = 0; i < noOfDocs; ++i) {
-			retrieval_results.add(runquery(query, i, B1, B2, B3, B4));
+			retrieval_results.add(runquery(query, i, wCosine, wLMP, wPhrase, wNumViews));
 
 		}
 		
@@ -39,7 +39,7 @@ public class LinearRanker{
 		return retrieval_results;
 	}
 
-	public ScoredDocument runquery(String query, int did, int B1, int B2, int B3, int B4) {
+	public ScoredDocument runquery(String query, int did, float wCosine, float wLMP, float wPhrase, float wNumViews) {
 		// Build query vector
 		Scanner s = new Scanner(query);
 		Vector<String> qv = new Vector<String>();
@@ -50,17 +50,17 @@ public class LinearRanker{
 
 		// Get the document vector.
 		Document d = _ranker.getDoc(did);
-		double score = getLinearScore(query, did, B1, B2, B3, B4);
+		double score = getLinearScore(query, did, wCosine, wLMP, wPhrase, wNumViews);
 		return new ScoredDocument(did, d.get_title_string(), score);
 	}
 
-	public double getLinearScore(String query, int did, int B1, int B2, int B3, int B4) {
+	public double getLinearScore(String query, int did, float wCosine, float wLMP, float wPhrase, float wNumViews) {
 		double cosineScore = new CosineRanker(_ranker).getCosineScore(query, did);
 		double phraseScore = new PhraseRanker(_ranker).getPhraseScore(query, did, 2);
 		double lmpScore = 0; // jelinek
 		double numViewsScore = 0;
 		
-		double score = B1*cosineScore + B2*phraseScore + B3*lmpScore + B4*numViewsScore;
+		double score = wCosine*cosineScore + wLMP*lmpScore + wPhrase*phraseScore + wNumViews*numViewsScore;
 		
 		return score;
 	}
@@ -75,7 +75,7 @@ public class LinearRanker{
 		
 		docvec = Utilities.getNGram(docvec, 2);
 
-		HashMap<String, Integer> dv = Utilities.getTermFreq(docvec);
+		HashMap<String, Double> dv = Utilities.getTermFreq(docvec);
 		System.out.print("Document vector : ");
 		for (String k : dv.keySet()) {
 			System.out.print(k + " : " + dv.get(k) + ", ");
