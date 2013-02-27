@@ -42,7 +42,9 @@ class Evaluator {
     
     String evaluatorOutput = "";
     
-	evaluatorOutput = evaluatePrecision(relevant_judgments, data, 1) + "\t" + 
+    evaluatorOutput += query + "\t";
+    
+	evaluatorOutput += evaluatePrecision(relevant_judgments, data, 1) + "\t" + 
 					  evaluatePrecision(relevant_judgments, data, 5) + "\t" + 
 					  evaluatePrecision(relevant_judgments, data, 10);
 	

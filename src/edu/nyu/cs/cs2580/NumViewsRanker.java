@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Vector;
 
 public class NumViewsRanker {
 
@@ -26,14 +27,16 @@ public class NumViewsRanker {
 		return didView;
 	}
 
-	public String createNewViewsReverseSorted(String fileName, boolean append) {
+	public Vector<ScoredDocument> createNewViewsReverseSorted(String fileName, boolean append) {
 		// System.out.println("Inside createNewViewsReverseSorted");
 		HashMap<Integer, Integer> didView = createDiDViewMap();
 		Utility u = new Utility();
 		HashMap<Integer, Integer> sortedDidViewMap = u
 				.sortByComparator(didView);
+		
+		Vector<ScoredDocument> vsd = new Vector<ScoredDocument>();
 
-		String contents = "";
+		//String contents = "";
 		// FileWriter fstream = new FileWriter(fileName, append);
 		// BufferedWriter out = new BufferedWriter(fstream);
 
@@ -46,8 +49,9 @@ public class NumViewsRanker {
 			String titleStr = _ranker.getTitleString(did);
 			int score = pairs.getValue();
 
-			contents += did + "\t" + titleStr + "\t" + score;
-			contents += "\n";
+			vsd.add(new ScoredDocument(did, titleStr, score));
+			//contents += did + "\t" + titleStr + "\t" + score;
+			//contents += "\n";
 
 		}
 
@@ -59,7 +63,7 @@ public class NumViewsRanker {
 		// out.write(contents);
 		// out.close();
 
-		return contents;
+		return vsd;
 	}
 
 }

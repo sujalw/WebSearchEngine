@@ -25,6 +25,10 @@ public class Output {
 	public static enum action {
 		RENDER, CLICK
 	};
+	
+	public Output() {
+		
+	}
 
 	public Output(final Vector<ScoredDocument> outputVector,
 			final Map<String, String> query_map) {
@@ -91,6 +95,7 @@ public class Output {
 
 		queryResponse += "<html><head></head><body><br>";
 		queryResponse += "<table border=\"1\">";
+		queryResponse += "<tr><th>Query</th><th>Document Title</th><th>Doc Id</th><th>Score</th></tr>";
 
 		try {
 			Iterator<ScoredDocument> itr = _outputVector.iterator();
@@ -109,7 +114,8 @@ public class Output {
 				queryResponse += "<tr>";
 				queryResponse += "<td>" + _query_map.get("query") + "</td>";				
 				queryResponse += "<td>" + "<a href=\""+ loggingUrl +"\">" + sd.get_title() + "</a>" + "</td>";
-				queryResponse += "<td>" + sd.get_score() + "</td>";
+				queryResponse += "<td>" + sd._did + "</td>";
+				queryResponse += "<td>" + sd.get_score() + "</td>";				
 				queryResponse += "</tr>";
 
 				_clickLoggingData = _clickLoggingData + sessionId + "\t"

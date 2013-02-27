@@ -55,116 +55,91 @@ public class DCG {
 	}
 
 	public double computeDCG(String query, int point) {
-		// System.out.println("hello");
 		double dcg = 1.0;
-		//System.out.println("query = " + query);
 		HashMap<Integer, Double> qr = scored_judgments.get(query);
-		//System.out.println("qr.size " + qr.size());
-		 //for (Map.Entry<Integer, Double> entry : qr.entrySet()){
-		 //System.out.println("Key = " + entry.getKey() + "," +
-		 //" Value = " + entry.getValue());
-		 //}
-		/*
-		 * if(point==1){ dcg = qr.get(0); } else{ dcg = qr.get(0); for(int
-		 * i=1;i<point;i++){ dcg+=qr.get(i) / Math.log(i+1); } }
-		 */
+
+		// System.out.println("qr.size " + qr.size());
+		// for (Map.Entry<Integer, Double> entry : qr.entrySet()){
+		// System.out.println("Key = " + entry.getKey() + "," +
+		// " Value = " + entry.getValue());
+		// }
+
 		if (point == 1) {
 			// idealDcg = qrSorted.get(0);
 			for (Vector<String> queryDid : data) {
-				//System.out.println("diddd = " + queryDid.get(1));
-				//System.out.println("querydid = " + queryDid.get(1));
-				//System.out.println("qr.get(queryDid.get(1))" + qr.get(5));
 				if (qr.get(Integer.parseInt(queryDid.get(1))) != null) {
 					dcg = qr.get(Integer.parseInt(queryDid.get(1)));
-					//System.out.println("added 1 = " + dcg);
 				}
 				break;
 			}
-			/*
-			 * for (Map.Entry<Integer, Double> entry : qr.entrySet()){
-			 * dcg=entry.getValue(); break; }
-			 */
 		} else {
 			for (Vector<String> queryDid : data) {
 				if (qr.get(Integer.parseInt(queryDid.get(1))) != null) {
 					dcg = qr.get(Integer.parseInt(queryDid.get(1)));
-					//System.out.println("added = " + dcg);
 				}
 				break;
 			}
-			/*
-			 * for(Vector<String> queryDid : data){ dcg=qr.get(queryDid.get(1));
-			 * break; }
-			 */
+
 			int count = 0;
-			//while (count <= point) {
-				for (Vector<String> queryDid : data) {
-					count++;
-					if (count == 1) {
-						continue;
-					} else if(count > point) {
-						break;
-					}else {
-						if (qr.get(Integer.parseInt(queryDid.get(1))) != null) {
-							dcg += (qr.get(Integer.parseInt(queryDid.get(1))) / Math.log(count))/Math.log(2d);
-							//System.out.println("added = " + (qr.get(Integer.parseInt(queryDid.get(1))) / Math.log(count)));
-						} else {
-							dcg += (1.0d / Math.log(count))/Math.log(2d);
-							
-							//System.out.println("added = " + (1.0d / Math.log(count)));
-						}
+			for (Vector<String> queryDid : data) {
+				count++;
+				if (count == 1) {
+					continue;
+				} else if (count > point) {
+					break;
+				} else {
+					if (qr.get(Integer.parseInt(queryDid.get(1))) != null) {
+						dcg += (qr.get(Integer.parseInt(queryDid.get(1))) / Math
+								.log(count)) / Math.log(2d);
+					} else {
+						dcg += (1.0d / Math.log(count)) / Math.log(2d);
+
 					}
 				}
-			//}
+			}
 		}
-		
-		System.out.println("dcg = " + dcg);
+
+		// System.out.println("dcg = " + dcg);
 		return dcg;
 	}
-	
-	
-	public double computeIdealDCG(String query,int point){
-		double idealDcg=0.0;
-		HashMap<Integer,Double> qr = scored_judgments.get(query);
-		Map<Integer,Double> qrSorted = sortByComparator(qr);
-		for (Map.Entry<Integer, Double> entry : qrSorted.entrySet()){ 
-			System.out.println("Key = " + entry.getKey() + "," +
-					" Value = " + entry.getValue()); 
-		}
-		if(point==1){
-			//idealDcg = qrSorted.get(0);
-			for (Map.Entry<Integer, Double> entry : qrSorted.entrySet()){ 
-				idealDcg=entry.getValue(); 
+
+	public double computeIdealDCG(String query, int point) {
+		double idealDcg = 0.0;
+		HashMap<Integer, Double> qr = scored_judgments.get(query);
+		Map<Integer, Double> qrSorted = sortByComparator(qr);
+		// for (Map.Entry<Integer, Double> entry : qrSorted.entrySet()){
+		// System.out.println("Key = " + entry.getKey() + "," +
+		// " Value = " + entry.getValue());
+		// }
+		if (point == 1) {
+			for (Map.Entry<Integer, Double> entry : qrSorted.entrySet()) {
+				idealDcg = entry.getValue();
 				break;
 			}
-		}
-		else{
-			for (Map.Entry<Integer, Double> entry : qrSorted.entrySet()){ 
-				idealDcg=entry.getValue(); 
+		} else {
+			for (Map.Entry<Integer, Double> entry : qrSorted.entrySet()) {
+				idealDcg = entry.getValue();
 				break;
 			}
-			int count=0;
-			//while(count<=point){
-			
-				for (Map.Entry<Integer, Double> entry : qrSorted.entrySet()){ 
-					count++;
-					if(count==1){
-						continue;
-					} else if(count > point) {
-						break;
-					}
-					else{
-						idealDcg += (entry.getValue() / Math.log(count))/Math.log(2d);
-						//System.out.println("entry.getValue() = " + entry.getValue());
-					} 
+			int count = 0;
+
+			for (Map.Entry<Integer, Double> entry : qrSorted.entrySet()) {
+				count++;
+				if (count == 1) {
+					continue;
+				} else if (count > point) {
+					break;
+				} else {
+					idealDcg += (entry.getValue() / Math.log(count))
+							/ Math.log(2d);
 				}
-			//}
+			}
 		}
-		
-		System.out.println("idealDcg = " + idealDcg);
+
+		// System.out.println("idealDcg = " + idealDcg);
 		return idealDcg;
 	}
-				
+
 	public double computeNDCG(String query, int point) {
 		return computeDCG(query, point) / computeIdealDCG(query, point);
 	}
@@ -180,10 +155,9 @@ public class DCG {
 		 */
 		for (Vector<String> queryDid : data) {
 			count++;
-						
+
 			if (qr.get(Integer.parseInt(queryDid.get(1))) != null) {
 				if (qr.get(Integer.parseInt(queryDid.get(1))) > 0.0) {
-					// System.out.println("count = " + count);
 					reciprocalRank = 1.0 / (double) count;
 					break;
 				}
