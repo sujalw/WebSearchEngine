@@ -1,8 +1,5 @@
 package edu.nyu.cs.cs2580;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,7 +11,6 @@ public class NumViewsRanker {
 
 	public NumViewsRanker(Ranker ranker) {
 		_ranker = ranker;
-		// createDiDViewMap();
 	}
 
 	public static HashMap<Integer, Integer> createDiDViewMap() {
@@ -27,18 +23,15 @@ public class NumViewsRanker {
 		return didView;
 	}
 
-	public Vector<ScoredDocument> createNewViewsReverseSorted(String fileName, boolean append) {
+	public Vector<ScoredDocument> createNewViewsReverseSorted(String fileName,
+			boolean append) {
 		// System.out.println("Inside createNewViewsReverseSorted");
 		HashMap<Integer, Integer> didView = createDiDViewMap();
 		Utility u = new Utility();
 		HashMap<Integer, Integer> sortedDidViewMap = u
 				.sortByComparator(didView);
-		
-		Vector<ScoredDocument> vsd = new Vector<ScoredDocument>();
 
-		//String contents = "";
-		// FileWriter fstream = new FileWriter(fileName, append);
-		// BufferedWriter out = new BufferedWriter(fstream);
+		Vector<ScoredDocument> vsd = new Vector<ScoredDocument>();
 
 		Iterator<Map.Entry<Integer, Integer>> it = sortedDidViewMap.entrySet()
 				.iterator();
@@ -50,18 +43,7 @@ public class NumViewsRanker {
 			int score = pairs.getValue();
 
 			vsd.add(new ScoredDocument(did, titleStr, score));
-			//contents += did + "\t" + titleStr + "\t" + score;
-			//contents += "\n";
-
 		}
-
-		// for(int i = sortedDidViewMap.size() - 1; i >= 0; i--) {
-		// String bodyStr = _ranker.getBodyString(i);
-
-		// out.newLine();
-		// }
-		// out.write(contents);
-		// out.close();
 
 		return vsd;
 	}

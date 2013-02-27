@@ -56,12 +56,12 @@ public class PhraseRanker {
 			String term = s.next();
 			qv.add(term);
 		}
-		
+
 		n = Math.min(n, qv.size());
 
 		// get n-gram terms for query vector
 		qv = Utilities.getNGram(qv, n);
-		
+
 		// Get the document vector.
 		Document d = _ranker.getDoc(did);
 
@@ -78,13 +78,12 @@ public class PhraseRanker {
 		HashMap<String, Double> termFreqDoc = Utilities.getTermFreq(dv);
 
 		// get unit vectors
-		//HashMap<String, Double> termFreqQuery_UnitVec = Utilities
-			//	.getUnitVector(termFreqQuery);
-		//HashMap<String, Double> termFreqDoc_UnitVec = Utilities
-			//	.getUnitVector(termFreqDoc);
+		// HashMap<String, Double> termFreqQuery_UnitVec = Utilities
+		// .getUnitVector(termFreqQuery);
+		// HashMap<String, Double> termFreqDoc_UnitVec = Utilities
+		// .getUnitVector(termFreqDoc);
 
-		double score = Utilities.getDotProduct(termFreqQuery,
-				termFreqDoc);
+		double score = Utilities.getDotProduct(termFreqQuery, termFreqDoc);
 
 		return score;
 	}
@@ -108,7 +107,7 @@ public class PhraseRanker {
 
 		Vector<String> queryvec = new Vector<String>();
 		queryvec.add("bing");
-		//queryvec.add("insurance");
+		// queryvec.add("insurance");
 
 		HashMap<String, Double> qv = Utilities.getTermFreq(queryvec);
 		System.out.print("Query vector : ");

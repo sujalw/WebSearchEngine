@@ -2,19 +2,19 @@ package edu.nyu.cs.cs2580;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Vector;
+
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import edu.nyu.cs.cs2580.Output.action;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.Vector;
 
 class QueryHandler implements HttpHandler {
 	private static String plainResponse = "Request received, but I am not smart enough to echo yet!\n";
@@ -81,27 +81,30 @@ class QueryHandler implements HttpHandler {
 							Vector<ScoredDocument> sds = cosineRanker
 									.runquery(query_map.get("query"));
 							sds = Utilities.sortScoredDocumentAsPer(sds);
-														
-							Output output = new Output(sds, query_map);							
-							
-							if(outputFormat.equals("text")) {
-								//queryResponse = Utilities.generateOutput(sds,
-									//	query_map, sessionId);
-								queryResponse = output.generateTextOutput(sessionId);
-								
+
+							Output output = new Output(sds, query_map);
+
+							if (outputFormat.equals("text")) {
+								// queryResponse = Utilities.generateOutput(sds,
+								// query_map, sessionId);
+								queryResponse = output
+										.generateTextOutput(sessionId);
+
 								String vsm_ranking_results = prop
 										.getProperty("vsm_ranking_results");
 								Utilities.writeToFile(resultsDir
-										+ vsm_ranking_results, queryResponse, true);
-								
-							} else if(outputFormat.equals("html")) {
-								queryResponse = output.generateHtmlOutput(sessionId, host);
+										+ vsm_ranking_results, queryResponse,
+										true);
+
+							} else if (outputFormat.equals("html")) {
+								queryResponse = output.generateHtmlOutput(
+										sessionId, host);
 							}
 
-							//String vsm_ranking_results = prop
-								//	.getProperty("vsm_ranking_results");
-							//Utilities.writeToFile(resultsDir
-								//	+ vsm_ranking_results, queryResponse, true);
+							// String vsm_ranking_results = prop
+							// .getProperty("vsm_ranking_results");
+							// Utilities.writeToFile(resultsDir
+							// + vsm_ranking_results, queryResponse, true);
 
 						} else if (ranker_type.equals("QL")) {
 							// queryResponse = (ranker_type +
@@ -111,42 +114,42 @@ class QueryHandler implements HttpHandler {
 							QueryLikelihoodRankerwithJMSmoothing.setLambda(0.5);
 							Vector<ScoredDocument> qlsd = queryLikelihoodRankerwithJMSmoothing
 									.runquery(query_map.get("query"));
-							
+
 							Output output = new Output(qlsd, query_map);
-							
-							if(outputFormat.equals("text")) {
-								//queryResponse = Utilities.generateOutput(sds,
-									//	query_map, sessionId);
-								queryResponse = output.generateTextOutput(sessionId);
-								
+
+							if (outputFormat.equals("text")) {
+								// queryResponse = Utilities.generateOutput(sds,
+								// query_map, sessionId);
+								queryResponse = output
+										.generateTextOutput(sessionId);
+
 								String ql_ranking_results = prop
 										.getProperty("ql_ranking_results");
 								Utilities.writeToFile(resultsDir
-										+ ql_ranking_results, queryResponse, true);
-								
-							} else if(outputFormat.equals("html")) {
-								queryResponse = output.generateHtmlOutput(sessionId, host);
-							}
-							
-							/*Iterator<ScoredDocument> iTer = qlsd.iterator();
-							while (iTer.hasNext()) {
-								ScoredDocument sd = iTer.next();
-								if (queryResponse.length() > 0) {
-									queryResponse = queryResponse + "\n";
-								}
-								queryResponse = queryResponse
-										+ query_map.get("query") + "\t"
-										+ sd.asString();
-							}
-							if (queryResponse.length() > 0) {
-								queryResponse = queryResponse + "\n";
+										+ ql_ranking_results, queryResponse,
+										true);
+
+							} else if (outputFormat.equals("html")) {
+								queryResponse = output.generateHtmlOutput(
+										sessionId, host);
 							}
 
-							// write the output to the desired file
-							String ql_ranking_results = prop
-									.getProperty("ql_ranking_results");
-							Utilities.writeToFile(resultsDir
-									+ ql_ranking_results, queryResponse, true);*/
+							/*
+							 * Iterator<ScoredDocument> iTer = qlsd.iterator();
+							 * while (iTer.hasNext()) { ScoredDocument sd =
+							 * iTer.next(); if (queryResponse.length() > 0) {
+							 * queryResponse = queryResponse + "\n"; }
+							 * queryResponse = queryResponse +
+							 * query_map.get("query") + "\t" + sd.asString(); }
+							 * if (queryResponse.length() > 0) { queryResponse =
+							 * queryResponse + "\n"; }
+							 * 
+							 * // write the output to the desired file String
+							 * ql_ranking_results = prop
+							 * .getProperty("ql_ranking_results");
+							 * Utilities.writeToFile(resultsDir +
+							 * ql_ranking_results, queryResponse, true);
+							 */
 
 						} else if (ranker_type.equals("phrase")) {
 							PhraseRanker phraseRanker = new PhraseRanker(
@@ -154,75 +157,90 @@ class QueryHandler implements HttpHandler {
 							Vector<ScoredDocument> sds = phraseRanker.runquery(
 									query_map.get("query"), 2); // bigram terms
 							sds = Utilities.sortScoredDocumentAsPer(sds);
-							
+
 							Output output = new Output(sds, query_map);
-							
-							if(outputFormat.equals("text")) {
-								queryResponse = output.generateTextOutput(sessionId);
-								
+
+							if (outputFormat.equals("text")) {
+								queryResponse = output
+										.generateTextOutput(sessionId);
+
 								String phrase_ranking_results = prop
 										.getProperty("phrase_ranking_results");
 								Utilities.writeToFile(resultsDir
-										+ phrase_ranking_results, queryResponse, true);
-								
-							} else if(outputFormat.equals("html")) {
-								queryResponse = output.generateHtmlOutput(sessionId, host);
-							}							
-							
+										+ phrase_ranking_results,
+										queryResponse, true);
+
+							} else if (outputFormat.equals("html")) {
+								queryResponse = output.generateHtmlOutput(
+										sessionId, host);
+							}
+
 						} else if (ranker_type.equals("linear")) {
 							LinearRanker linRanker = new LinearRanker(_ranker);
 							Vector<ScoredDocument> sds = linRanker.runquery(
 									query_map.get("query"), 0.3f, 0.3f, 0.3f,
 									0.1f);
 							sds = Utilities.sortScoredDocumentAsPer(sds);
-							
+
 							Output output = new Output(sds, query_map);
-							
-							if(outputFormat.equals("text")) {
-								queryResponse = output.generateTextOutput(sessionId);
-								
+
+							if (outputFormat.equals("text")) {
+								queryResponse = output
+										.generateTextOutput(sessionId);
+
 								String linear_ranking_results = prop
 										.getProperty("linear_ranking_results");
 								Utilities.writeToFile(resultsDir
-										+ linear_ranking_results, queryResponse, true);
-								
-							} else if(outputFormat.equals("html")) {
-								queryResponse = output.generateHtmlOutput(sessionId, host);
+										+ linear_ranking_results,
+										queryResponse, true);
+
+							} else if (outputFormat.equals("html")) {
+								queryResponse = output.generateHtmlOutput(
+										sessionId, host);
 							}
-							
+
 						} else if (ranker_type.equals("numviews")) {
-							NumViewsRanker nvr = new NumViewsRanker(_ranker);	
-							String resPath = resultsDir + prop.getProperty("numviews_ranking_results");
-							Vector<ScoredDocument> sds = nvr.createNewViewsReverseSorted(resPath, true);
+							NumViewsRanker nvr = new NumViewsRanker(_ranker);
+							String resPath = resultsDir
+									+ prop.getProperty("numviews_ranking_results");
+							Vector<ScoredDocument> sds = nvr
+									.createNewViewsReverseSorted(resPath, true);
 							Output output = new Output(sds, query_map);
-							
-							if(outputFormat.equals("text")) {
-								queryResponse = output.generateTextOutput(sessionId);
-								
+
+							if (outputFormat.equals("text")) {
+								queryResponse = output
+										.generateTextOutput(sessionId);
+
 								String numviews_ranking_results = prop
 										.getProperty("numviews_ranking_results");
 								Utilities.writeToFile(resultsDir
-										+ numviews_ranking_results, queryResponse, true);
-								
-							} else if(outputFormat.equals("html")) {
-								queryResponse = output.generateHtmlOutput(sessionId, host);
+										+ numviews_ranking_results,
+										queryResponse, true);
+
+							} else if (outputFormat.equals("html")) {
+								queryResponse = output.generateHtmlOutput(
+										sessionId, host);
 							}
-							
+
 							// prepend query to each line
-							/*String query = query_map.get("query");
-							queryResponse = query + "\t" + queryResponse;
-							queryResponse = queryResponse.substring(0, queryResponse.lastIndexOf("\n"));
-							queryResponse = queryResponse.replaceAll("\n", "\n"+query+"\t");
-							
-							Output output = new Output();
-							
-							if(outputFormat.equals("text")) {
-								
-							} else if(outputFormat.equals("html")) {
-								
-							}
-							
-							Utilities.writeToFile(resPath, queryResponse, true);*/
+							/*
+							 * String query = query_map.get("query");
+							 * queryResponse = query + "\t" + queryResponse;
+							 * queryResponse = queryResponse.substring(0,
+							 * queryResponse.lastIndexOf("\n")); queryResponse =
+							 * queryResponse.replaceAll("\n", "\n"+query+"\t");
+							 * 
+							 * Output output = new Output();
+							 * 
+							 * if(outputFormat.equals("text")) {
+							 * 
+							 * } else if(outputFormat.equals("html")) {
+							 * 
+							 * }
+							 * 
+							 * Utilities.writeToFile(resPath, queryResponse,
+							 * true);
+							 */
 						} else {
 							queryResponse = (ranker_type + " not implemented.");
 						}
@@ -247,31 +265,34 @@ class QueryHandler implements HttpHandler {
 						}
 					}
 				}
-			} else if(uriPath.equals("/logging")) {
+			} else if (uriPath.equals("/logging")) {
 				Map<String, String> query_map = getQueryMap(uriQuery);
 				Set<String> keys = query_map.keySet();
-				
+
 				if (keys.contains("did")) {
-					int did = Integer.parseInt(query_map.get("did"));					
+					int did = Integer.parseInt(query_map.get("did"));
 					Output.logAction(sessionId, query_map.get("query"), did,
 							action.CLICK, new Date());
-					
-					queryResponse = "Document title = " + _ranker.getDoc(did).get_title_string() + "<br><br>";
-					queryResponse += "Document Body = <br>" +  _ranker.getDoc(did).get_body_string();
-					
+
+					queryResponse = "Document title = "
+							+ _ranker.getDoc(did).get_title_string()
+							+ "<br><br>";
+					queryResponse += "Document Body = <br>"
+							+ _ranker.getDoc(did).get_body_string();
+
 					outputFormat = "html";
-				}				
+				}
 			}
 		}
 
 		// Construct a simple response.
 		Headers responseHeaders = exchange.getResponseHeaders();
-		if(outputFormat.equals("text")) {
+		if (outputFormat.equals("text")) {
 			responseHeaders.set("Content-Type", "text/plain");
-		} else if(outputFormat.equals("html")) {
+		} else if (outputFormat.equals("html")) {
 			responseHeaders.set("Content-Type", "text/html");
-		}		
-		
+		}
+
 		exchange.sendResponseHeaders(200, 0); // arbitrary number of bytes
 		OutputStream responseBody = exchange.getResponseBody();
 		responseBody.write(queryResponse.getBytes());

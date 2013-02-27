@@ -1,9 +1,5 @@
 package edu.nyu.cs.cs2580;
 
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -25,9 +21,9 @@ public class Output {
 	public static enum action {
 		RENDER, CLICK
 	};
-	
+
 	public Output() {
-		
+
 	}
 
 	public Output(final Vector<ScoredDocument> outputVector,
@@ -80,13 +76,13 @@ public class Output {
 
 			logData = sessionId + "\t" + query + "\t" + did + "\t" + logAction
 					+ "\t" + date + "\n";
-			
-			Utilities.writeToFile(resultsDir + click_logging_results, logData, true);
+
+			Utilities.writeToFile(resultsDir + click_logging_results, logData,
+					true);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
 	}
 
@@ -105,17 +101,21 @@ public class Output {
 					queryResponse = queryResponse + "\n";
 				}
 
-				String loggingUrl = "http://"+host+"/logging?query=" + _query_map.get("query") + "&did="+sd._did;
+				String loggingUrl = "http://" + host + "/logging?query="
+						+ _query_map.get("query") + "&did=" + sd._did;
 				URL url = new URL(loggingUrl);
-				URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+				URI uri = new URI(url.getProtocol(), url.getUserInfo(),
+						url.getHost(), url.getPort(), url.getPath(),
+						url.getQuery(), url.getRef());
 				url = uri.toURL();
 				loggingUrl = url.toString();
-				
+
 				queryResponse += "<tr>";
-				queryResponse += "<td>" + _query_map.get("query") + "</td>";				
-				queryResponse += "<td>" + "<a href=\""+ loggingUrl +"\">" + sd.get_title() + "</a>" + "</td>";
+				queryResponse += "<td>" + _query_map.get("query") + "</td>";
+				queryResponse += "<td>" + "<a href=\"" + loggingUrl + "\">"
+						+ sd.get_title() + "</a>" + "</td>";
 				queryResponse += "<td>" + sd._did + "</td>";
-				queryResponse += "<td>" + sd.get_score() + "</td>";				
+				queryResponse += "<td>" + sd.get_score() + "</td>";
 				queryResponse += "</tr>";
 
 				_clickLoggingData = _clickLoggingData + sessionId + "\t"

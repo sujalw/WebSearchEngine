@@ -19,20 +19,21 @@ public class TestAll {
 	public TestAll() {
 		// read all queries from queries.tsv and create a shell script that
 		// tests all models on it.
-		
-		String[] rankerModels = new String[]{"cosine", "QL" , "phrase", "numviews", "linear"};
-		
+
+		String[] rankerModels = new String[] { "cosine", "QL", "phrase",
+				"numviews", "linear" };
+
 		HashMap<String, Integer> rankerModelsMap = new HashMap<String, Integer>();
 		rankerModelsMap.put("cosine", 0);
 		rankerModelsMap.put("QL", 1);
 		rankerModelsMap.put("phrase", 2);
 		rankerModelsMap.put("numviews", 3);
 		rankerModelsMap.put("linear", 4);
-		
+
 		String outputFormat = "text";
 		String host = "localhost";
 		int port = 25803;
-		
+
 		String script = "testall.sh";
 
 		Properties prop = new Properties();
@@ -43,35 +44,49 @@ public class TestAll {
 			String queries = prop.getProperty("queries");
 			String qrels = prop.getProperty("qrels");
 			String results_dir = prop.getProperty("results_dir");
-			
-			String vsm_evaluator_results = prop.getProperty("vsm_evaluator_results");
-			String ql_evaluator_results = prop.getProperty("ql_evaluator_results");
-			String phrase_evaluator_results = prop.getProperty("phrase_evaluator_results");
-			String numviews_evaluator_results = prop.getProperty("numviews_evaluator_results");
-			String linear_evaluator_results = prop.getProperty("linear_evaluator_results");			
-			
-			String[] outputResults = new String[]{vsm_evaluator_results, ql_evaluator_results, phrase_evaluator_results, numviews_evaluator_results, linear_evaluator_results};
+
+			String vsm_evaluator_results = prop
+					.getProperty("vsm_evaluator_results");
+			String ql_evaluator_results = prop
+					.getProperty("ql_evaluator_results");
+			String phrase_evaluator_results = prop
+					.getProperty("phrase_evaluator_results");
+			String numviews_evaluator_results = prop
+					.getProperty("numviews_evaluator_results");
+			String linear_evaluator_results = prop
+					.getProperty("linear_evaluator_results");
+
+			String[] outputResults = new String[] { vsm_evaluator_results,
+					ql_evaluator_results, phrase_evaluator_results,
+					numviews_evaluator_results, linear_evaluator_results };
 
 			FileReader fr = new FileReader(dataDir + queries);
 			BufferedReader br = new BufferedReader(fr);
 			String query = "";
-			
+
 			String testUrl = "";
-			while((query = br.readLine()) != null) {
-				for(String rankerModel : rankerModels) {
-					testUrl = "http://" + host + ":" + port + "/search?query=" + query + "&ranker=" + rankerModel + "&format=" + outputFormat;
+			while ((query = br.readLine()) != null) {
+				for (String rankerModel : rankerModels) {
+					testUrl = "http://" + host + ":" + port + "/search?query="
+							+ query + "&ranker=" + rankerModel + "&format="
+							+ outputFormat;
 					URL url = new URL(testUrl);
-					URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+					URI uri = new URI(url.getProtocol(), url.getUserInfo(),
+							url.getHost(), url.getPort(), url.getPath(),
+							url.getQuery(), url.getRef());
 					url = uri.toURL();
-					testUrl = "curl " + "\"" + url.toString() + "\"";					
-					testUrl += " | java edu.nyu.cs.cs2580.Evaluator " + "\"" + dataDir + qrels + "\"";
-										
-					testUrl += " >> " + "\"" + results_dir + outputResults[rankerModelsMap.get(rankerModel)] + "\""; 
-					
+					testUrl = "curl " + "\"" + url.toString() + "\"";
+					testUrl += " | java edu.nyu.cs.cs2580.Evaluator " + "\""
+							+ dataDir + qrels + "\"";
+
+					testUrl += " >> " + "\"" + results_dir
+							+ outputResults[rankerModelsMap.get(rankerModel)]
+							+ "\"";
+
 					testUrl += "\n";
-					
+
 					Utilities.writeToFile(results_dir + script, testUrl, true);
-				}				
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

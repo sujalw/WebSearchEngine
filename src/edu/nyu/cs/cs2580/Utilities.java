@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -70,7 +69,7 @@ public class Utilities {
 
 		return dotProduct;
 	}
-	
+
 	/**
 	 * @author sujal
 	 * @param vec1
@@ -310,11 +309,11 @@ public class Utilities {
 			HashMap<String, Double> vec1, HashMap<String, Double> vec2) {
 
 		HashMap<String, Double> tfIdf = new HashMap<String, Double>();
-		
-		for(String term : vec1.keySet()) {
+
+		for (String term : vec1.keySet()) {
 			tfIdf.put(term, vec1.get(term) * vec2.get(term));
 		}
-		
+
 		return tfIdf;
 	}
 }
