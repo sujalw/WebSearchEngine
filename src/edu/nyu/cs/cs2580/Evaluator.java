@@ -330,7 +330,13 @@ class Evaluator {
 				count++;
 			}
 		}
-		return (precisionSum / count);
+		
+		if(count != 0.0d) {
+			return (precisionSum / count);
+		} else {
+			return 0;
+		}
+		
 	}
 
 	public static double f1Score(
