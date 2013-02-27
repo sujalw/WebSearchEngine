@@ -38,7 +38,7 @@ class Ranker {
 		double freq=0;
 		Document d = getDoc(documentId);
 		Vector < String > content = d.get_body_vector();
-		content.addAll(d.get_title_vector());
+		content.addAll(d.get_title_vector());		
 		for(int i=0;i<content.size();i++){
 			if(term.equalsIgnoreCase(content.get(i))){
 				//System.out.println("hi "+ documentId);
@@ -57,6 +57,7 @@ class Ranker {
 		double wordCount=0;
 		Document d = getDoc(documentId);
 		Vector < String > content = d.get_body_vector();
+		content.addAll(d.get_title_vector());
 		wordCount=content.size();
 		return wordCount;
 	}
@@ -137,6 +138,7 @@ class Ranker {
   public int termFreqInDoc(int did, String term) {
 	  Document d = _index.getDoc(did);
 	  Vector<String> dBody = d.get_body_vector();
+	  dBody.addAll(d.get_title_vector());
 	  int termCount = 0;
 	  for(int i = 0; i < dBody.size(); i++) {
 		  if(dBody.get(i).equalsIgnoreCase(term)) {
@@ -152,8 +154,9 @@ class Ranker {
    * @return
    */
   public int wordCountInDoc(int did) {
-	  Document d = _index.getDoc(did);	  
+	  Document d = _index.getDoc(did);
 	  Vector<String> dBody = d.get_body_vector();
+	  dBody.addAll(d.get_title_vector());
 	  return dBody.size();
   }
   

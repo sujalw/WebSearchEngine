@@ -5,6 +5,10 @@ import java.io.OutputStream;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
+import edu.nyu.cs.cs2580.Output.action;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -76,12 +80,18 @@ class QueryHandler implements HttpHandler {
 							sds = Utilities.sortScoredDocumentAsPer(sds);
 							queryResponse = Utilities.generateOutput(sds,
 									query_map, sessionId);
+														
+							Output output = new Output(sds, query_map);
+							
+							String host = requestHeaders.get("Host").get(0);							
+							
+							queryResponse = output.generateHtmlOutput(sessionId, host);
 
 							// write the output to the desired file
-							String vsm_ranking_results = prop
-									.getProperty("vsm_ranking_results");
-							Utilities.writeToFile(resultsDir
-									+ vsm_ranking_results, queryResponse, true);
+							//String vsm_ranking_results = prop
+								//	.getProperty("vsm_ranking_results");
+							//Utilities.writeToFile(resultsDir
+								//	+ vsm_ranking_results, queryResponse, true);
 
 						} else if (ranker_type.equals("QL")) {
 							// queryResponse = (ranker_type +
@@ -191,12 +201,22 @@ class QueryHandler implements HttpHandler {
 						}
 					}
 				}
+			} else if(uriPath.equals("/logging")) {
+				Map<String, String> query_map = getQueryMap(uriQuery);
+				Set<String> keys = query_map.keySet();
+				
+				if (keys.contains("did")) {					
+					int did = Integer.parseInt(query_map.get("did"));
+					//queryResponse = "Document title = ";
+					Output.logAction(sessionId, query_map.get("query"), did,
+							action.CLICK, new Date());
+				}
 			}
 		}
 
 		// Construct a simple response.
 		Headers responseHeaders = exchange.getResponseHeaders();
-		responseHeaders.set("Content-Type", "text/plain");
+		responseHeaders.set("Content-Type", "text/html");
 		exchange.sendResponseHeaders(200, 0); // arbitrary number of bytes
 		OutputStream responseBody = exchange.getResponseBody();
 		responseBody.write(queryResponse.getBytes());

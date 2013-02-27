@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,7 +18,11 @@ public class Output {
 	Map<String, String> _query_map;
 	String _clickLoggingData;
 
-	public enum action {
+	public static enum outputType {
+		TEXT, HTML
+	};
+
+	public static enum action {
 		RENDER, CLICK
 	};
 
@@ -35,14 +41,7 @@ public class Output {
 	public String generateTextOutput(String sessionId) {
 		String queryResponse = "";
 
-		Properties prop = new Properties();
-		
 		try {
-			// load a properties file
-			prop.load(this.getClass().getResourceAsStream("config.properties"));
-			String resultsDir = prop.getProperty("results_dir");
-			String click_logging_results = prop.getProperty("click_logging_results");
-			
 			Iterator<ScoredDocument> itr = _outputVector.iterator();
 			while (itr.hasNext()) {
 				ScoredDocument sd = itr.next();
@@ -52,14 +51,10 @@ public class Output {
 				queryResponse = queryResponse + _query_map.get("query") + "\t"
 						+ sd.asString();
 
-				_clickLoggingData = _clickLoggingData + sessionId + "\t"
-						+ _query_map.get("query") + "\t" + sd._did + "\t"
-						+ action.RENDER + "\t" + new Date() + "\n";
+				logAction(sessionId, _query_map.get("query"), sd._did,
+						action.RENDER, new Date());
 			}
-			
-			// write _clickLogging data to the file						
-			Utilities.writeToFile(resultsDir + click_logging_results, _clickLoggingData, true);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -67,35 +62,68 @@ public class Output {
 		return queryResponse;
 		// return _clickLogging;
 	}
-	
-	public String generateHtmlOutput(String sessionId) {
+
+	public static void logAction(String sessionId, String query, int did,
+			action logAction, Date date) {
+		String logData = "";
+		Properties prop = new Properties();
+		// load a properties file
+		try {
+			prop.load(Output.class.getResourceAsStream("config.properties"));
+			String resultsDir = prop.getProperty("results_dir");
+			String click_logging_results = prop
+					.getProperty("click_logging_results");
+
+			logData = sessionId + "\t" + query + "\t" + did + "\t" + logAction
+					+ "\t" + date + "\n";
+			
+			Utilities.writeToFile(resultsDir + click_logging_results, logData, true);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+	}
+
+	public String generateHtmlOutput(String sessionId, String host) {
 		String queryResponse = "";
 
-		Properties prop = new Properties();
-		
+		queryResponse += "<html><head></head><body><br>";
+		queryResponse += "<table border=\"1\">";
+
 		try {
-			// load a properties file
-			prop.load(this.getClass().getResourceAsStream("config.properties"));
-			String resultsDir = prop.getProperty("results_dir");
-			String click_logging_results = prop.getProperty("click_logging_results");
-			
 			Iterator<ScoredDocument> itr = _outputVector.iterator();
 			while (itr.hasNext()) {
 				ScoredDocument sd = itr.next();
 				if (queryResponse.length() > 0) {
 					queryResponse = queryResponse + "\n";
 				}
-				queryResponse = queryResponse + _query_map.get("query") + "\t"
-						+ sd.asString();
+
+				String loggingUrl = "http://"+host+"/logging?query=" + _query_map.get("query") + "&did="+sd._did;
+				URL url = new URL(loggingUrl);
+				URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+				url = uri.toURL();
+				loggingUrl = url.toString();
+				
+				queryResponse += "<tr>";
+				queryResponse += "<td>" + _query_map.get("query") + "</td>";				
+				queryResponse += "<td>" + "<a href=\""+ loggingUrl +"\">" + sd.get_title() + "</a>" + "</td>";
+				queryResponse += "<td>" + sd.get_score() + "</td>";
+				queryResponse += "</tr>";
 
 				_clickLoggingData = _clickLoggingData + sessionId + "\t"
 						+ _query_map.get("query") + "\t" + sd._did + "\t"
 						+ action.RENDER + "\t" + new Date() + "\n";
 			}
-			
-			// write _clickLogging data to the file						
-			//Utilities.writeToFile(resultsDir + click_logging_results, _clickLoggingData, true);
-			
+
+			queryResponse += "</table>";
+			queryResponse += "<br></body></html>";
+
+			// write _clickLogging data to the file
+			// Utilities.writeToFile(resultsDir + click_logging_results,
+			// _clickLoggingData, true);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

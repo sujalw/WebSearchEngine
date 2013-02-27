@@ -66,7 +66,9 @@ public class PhraseRanker {
 		Document d = _ranker.getDoc(did);
 
 		// get n-gram terms
-		Vector<String> dv = Utilities.getNGram(d.get_body_vector(), n);
+		Vector<String> docVec = d.get_body_vector();
+		docVec.addAll(d.get_title_vector());
+		Vector<String> dv = Utilities.getNGram(docVec, n);
 		// Vector<String> dv = Utilities.getNGram(d.get_title_vector(), n);
 
 		// get n-gram term frequencies in the query

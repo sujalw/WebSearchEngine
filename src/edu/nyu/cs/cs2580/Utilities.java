@@ -186,7 +186,6 @@ public class Utilities {
 			Map<String, String> query_map, String sessionId) {
 
 		String queryResponse = "";
-
 		Output output = new Output(sdv, query_map);
 		queryResponse = output.generateTextOutput(sessionId);
 
