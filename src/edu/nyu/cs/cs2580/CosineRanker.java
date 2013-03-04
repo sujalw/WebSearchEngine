@@ -9,6 +9,8 @@ import java.util.Vector;
  * @author sujal
  * 
  */
+
+
 public class CosineRanker {
 
 	private Ranker _ranker;
